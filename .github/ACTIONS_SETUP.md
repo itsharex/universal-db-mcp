@@ -85,6 +85,8 @@ npm owner ls universal-db-mcp
 
 ### 方法 1: 通过 GitHub Release（推荐）
 
+先把代码都commit，然后再开始下面操作
+
 1. **更新版本号**
    ```bash
    # 补丁版本 (0.1.1 -> 0.1.2)
@@ -103,12 +105,13 @@ npm owner ls universal-db-mcp
    ```
 
 3. **创建 GitHub Release**
+   
    - 进入 GitHub 仓库
    - 点击 **Releases** → **Create a new release**
    - 选择刚才创建的 tag
    - 填写 Release 标题和说明
-   - 点击 **Publish release**
-
+- 点击 **Publish release**
+   
 4. **自动发布**
    - GitHub Actions 会自动触发
    - 构建并发布到 NPM

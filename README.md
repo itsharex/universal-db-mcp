@@ -16,10 +16,16 @@
 **MCP 数据库万能连接器** 通过 Model Context Protocol (MCP) 协议，让 Claude Desktop 成为你的数据库助手：
 
 ✅ **自然语言查询** - 用中文描述需求，Claude 自动生成并执行 SQL
+
 ✅ **智能表结构理解** - 自动获取数据库 Schema，提供精准建议
+
 ✅ **多数据库支持** - MySQL、PostgreSQL、Redis、Oracle 一键切换
+
 ✅ **安全第一** - 默认只读模式，防止误操作删库
+
 ✅ **开箱即用** - 无需复杂配置，一行命令启动
+
+
 
 ## 🚀 快速开始
 
@@ -105,7 +111,7 @@ Claude 会自动调用数据库工具完成查询！
 | MySQL | `--type mysql` | ✅ 已支持 |
 | PostgreSQL | `--type postgres` | ✅ 已支持 |
 | Redis | `--type redis` | ✅ 已支持 |
-| Oracle | `--type oracle` | ✅ 已支持 |
+| Oracle（12c以上） | `--type oracle` | ✅ 已支持 |
 | MongoDB | `--type mongo` | 🚧 计划中 |
 | SQLite | `--type sqlite` | 🚧 计划中 |
 
