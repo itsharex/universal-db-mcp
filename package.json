@@ -22,6 +22,8 @@
     "postgresql",
     "redis",
     "oracle",
+    "dameng",
+    "dm",
     "数据库",
     "AI"
   ],
@@ -53,6 +55,9 @@
     "@types/oracledb": "^6.5.1",
     "@types/pg": "^8.11.10",
     "typescript": "^5.7.3"
+  },
+  "optionalDependencies": {
+    "dmdb": "^1.0.46190"
   },
   "engines": {
     "node": ">=20.0.0"

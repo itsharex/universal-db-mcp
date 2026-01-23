@@ -273,6 +273,82 @@
 2. 生成 SQL: `SELECT DEPARTMENT_ID, COUNT(*) as EMP_COUNT FROM EMPLOYEES GROUP BY DEPARTMENT_ID`
 3. 执行并返回结果
 
+
+
+## 达梦 使用示例
+
+### 基础配置（只读模式）
+
+```json
+{
+  "mcpServers": {
+    "dm-db": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "dm",
+        "--host", "localhost",
+        "--port", "5236",
+        "--user", "SYSDBA",
+        "--password", "SYSDBA",
+        "--database", "DAMENG"
+      ]
+    }
+  }
+}
+```
+
+**注意**: 达梦数据库驱动 `dmdb` 会作为可选依赖自动安装。如果安装失败，请手动运行：
+
+```bash
+npm install -g dmdb
+```
+
+### 连接远程达梦数据库
+
+```json
+{
+  "mcpServers": {
+    "dm-prod": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "dm",
+        "--host", "dm-server.example.com",
+        "--port", "5236",
+        "--user", "app_user",
+        "--password", "secure_password",
+        "--database", "PRODUCTION"
+      ]
+    }
+  }
+}
+```
+
+### 与 Claude 对话示例
+
+**用户**: 查看数据库中的所有表
+
+**Claude 会自动**:
+
+1. 调用 `get_schema` 工具
+2. 返回所有表的列表和基本信息
+
+**用户**: 查询部门表中的所有记录
+
+**Claude 会自动**:
+
+1. 生成 SQL: `SELECT * FROM DEPT`
+2. 执行查询并返回结果
+
+**用户**: 统计每个部门的员工数量
+
+**Claude 会自动**:
+
+1. 理解需求
+2. 生成 SQL: `SELECT DEPT_ID, COUNT(*) as EMP_COUNT FROM EMPLOYEES GROUP BY DEPT_ID`
+3. 执行并返回结果
+
 ---
 
 ## Claude Desktop 配置示例

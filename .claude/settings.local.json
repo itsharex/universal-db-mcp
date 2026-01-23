@@ -9,7 +9,14 @@
       "Bash(npm pack --dry-run)",
       "Bash(npm pack)",
       "Bash(npm whoami:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm view dmdb --json)",
+      "Bash(npm view dmdb description author homepage keywords)",
+      "Bash(iconv:*)",
+      "Bash(chcp 65001)",
+      "Bash(findstr:*)",
+      "Bash(python:*)"
     ]
   }
 }
