@@ -351,6 +351,119 @@ npm install -g dmdb
 
 ---
 
+## SQL Server 使用示例
+
+### 基础配置（只读模式）
+
+```json
+{
+  "mcpServers": {
+    "sqlserver-db": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "sqlserver",
+        "--host", "localhost",
+        "--port", "1433",
+        "--user", "sa",
+        "--password", "YourPassword123",
+        "--database", "master"
+      ]
+    }
+  }
+}
+```
+
+**提示**: 也可以使用 `--type mssql` 作为别名。
+
+### 启用写入模式
+
+```json
+{
+  "mcpServers": {
+    "sqlserver-write": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "sqlserver",
+        "--host", "localhost",
+        "--port", "1433",
+        "--user", "sa",
+        "--password", "YourPassword123",
+        "--database", "MyDatabase",
+        "--danger-allow-write"
+      ]
+    }
+  }
+}
+```
+
+### 连接 Azure SQL Database
+
+```json
+{
+  "mcpServers": {
+    "azure-sql": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "sqlserver",
+        "--host", "myserver.database.windows.net",
+        "--port", "1433",
+        "--user", "myadmin",
+        "--password", "MyPassword123!",
+        "--database", "mydatabase"
+      ]
+    }
+  }
+}
+```
+
+**注意**: 连接 Azure SQL Database 时会自动启用加密连接。
+
+### 与 Claude 对话示例
+
+**用户**: 查看数据库中有哪些表？
+
+**Claude 会自动**:
+
+1. 调用 `get_schema` 工具
+2. 执行查询: `SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`
+3. 返回表列表
+
+**用户**: 查看 Users 表的结构
+
+**Claude 会自动**:
+
+1. 调用 `get_table_info` 工具
+2. 返回列信息、主键、索引等详细信息
+
+**用户**: 统计每个部门的员工数量
+
+**Claude 会自动**:
+
+1. 理解需求
+2. 生成 SQL: `SELECT DepartmentID, COUNT(*) as EmployeeCount FROM Employees GROUP BY DepartmentID ORDER BY EmployeeCount DESC`
+3. 执行并返回结果
+
+**用户**: 查找最近一周创建的订单
+
+**Claude 会自动**:
+
+1. 生成 SQL: `SELECT * FROM Orders WHERE CreatedDate >= DATEADD(day, -7, GETDATE()) ORDER BY CreatedDate DESC`
+2. 执行并返回结果
+
+### 注意事项
+
+1. **默认端口**: SQL Server 默认端口为 1433
+2. **身份验证**: 支持 SQL Server 身份验证（用户名/密码）
+3. **加密连接**: 连接 Azure SQL 时会自动启用加密，本地 SQL Server 默认不加密
+4. **数据库名**: 必须指定数据库名（如 master、tempdb 或自定义数据库）
+5. **权限**: 确保用户有足够的权限访问系统视图（INFORMATION_SCHEMA）
+6. **参数化查询**: 支持 `?` 占位符，会自动转换为 SQL Server 的 `@param0` 语法
+
+---
+
 ## Claude Desktop 配置示例
 
 ### 同时连接多个数据库

@@ -16,7 +16,8 @@
       "Bash(iconv:*)",
       "Bash(chcp 65001)",
       "Bash(findstr:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(npm view mssql version)"
     ]
   }
 }

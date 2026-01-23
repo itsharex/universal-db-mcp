@@ -113,6 +113,7 @@ Claude 会自动调用数据库工具完成查询！
 | Redis | `--type redis` | 6379 | ✅ 已支持 | - |
 | Oracle（12c以上） | `--type oracle` | 1521 | ✅ 已支持 | - |
 | 达梦（DM7/DM8） | `--type dm` | 5236 | ✅ 已支持 | 驱动自动安装 |
+| SQL Server (2012+) | `--type sqlserver` 或 `--type mssql` | 1433 | ✅ 已支持 | 支持 Azure SQL Database |
 | MongoDB | `--type mongo` | - | 🚧 计划中 | - |
 | SQLite | `--type sqlite` | - | 🚧 计划中 | - |
 
@@ -124,7 +125,7 @@ Claude 会自动调用数据库工具完成查询！
 universal-db-mcp [选项]
 
 选项：
-  --type <db>              数据库类型 (mysql|postgres|redis|oracle|dm)
+  --type <db>              数据库类型 (mysql|postgres|redis|oracle|dm|sqlserver|mssql)
   --host <host>            数据库主机地址 (默认: localhost)
   --port <port>            数据库端口
   --user <user>            用户名

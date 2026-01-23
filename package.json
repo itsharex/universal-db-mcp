@@ -24,6 +24,9 @@
     "oracle",
     "dameng",
     "dm",
+    "sqlserver",
+    "mssql",
+    "sql-server",
     "数据库",
     "AI"
   ],
@@ -45,12 +48,14 @@
     "@modelcontextprotocol/sdk": "^1.0.4",
     "commander": "^12.1.0",
     "ioredis": "^5.4.2",
+    "mssql": "^12.2.0",
     "mysql2": "^3.11.5",
     "oracledb": "^6.7.0",
     "pg": "^8.13.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/mssql": "^9.1.5",
     "@types/node": "^22.10.5",
     "@types/oracledb": "^6.5.1",
     "@types/pg": "^8.11.10",
