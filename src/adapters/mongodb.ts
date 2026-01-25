@@ -73,8 +73,8 @@ export class MongoDBAdapter implements DbAdapter {
       const dbName = this.config.database || 'test';
       this.db = this.client.db(dbName);
 
-      // 测试连接
-      await this.db.admin().ping();
+      // 测试连接 - 使用 command 方法代替 admin().ping()
+      await this.db.command({ ping: 1 });
     } catch (error) {
       throw new Error(
         `MongoDB 连接失败: ${error instanceof Error ? error.message : String(error)}`
@@ -345,9 +345,9 @@ export class MongoDBAdapter implements DbAdapter {
     }
 
     try {
-      // 获取 MongoDB 版本
-      const serverInfo = await this.db.admin().serverInfo();
-      const version = serverInfo.version || 'unknown';
+      // 获取 MongoDB 版本 - 使用 buildInfo 命令代替 admin().serverInfo()
+      const buildInfo = await this.db.command({ buildInfo: 1 });
+      const version = buildInfo.version || 'unknown';
 
       // 获取数据库名称
       const databaseName = this.db.databaseName;

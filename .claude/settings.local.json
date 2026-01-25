@@ -18,7 +18,8 @@
       "Bash(findstr:*)",
       "Bash(python:*)",
       "Bash(npm view mssql version)",
-      "Bash(npm install mongodb)"
+      "Bash(npm install mongodb)",
+      "Bash(npm ls mongodb)"
     ]
   }
 }
