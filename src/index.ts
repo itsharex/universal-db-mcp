@@ -27,6 +27,7 @@ program
   .option('--user <user>', '用户名')
   .option('--password <password>', '密码')
   .option('--database <database>', '数据库名称')
+  .option('--auth-source <authSource>', 'MongoDB 认证数据库（默认为 admin）')
   .option('--danger-allow-write', '启用写入模式（危险！默认为只读模式）', false)
   .action(async (options) => {
     try {
@@ -133,6 +134,7 @@ program
             user: config.user,
             password: config.password,
             database: config.database,
+            authSource: options.authSource,
           });
           break;
 

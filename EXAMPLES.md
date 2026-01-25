@@ -483,7 +483,8 @@ npm install -g dmdb
         "--port", "27017",
         "--user", "admin",
         "--password", "your_password",
-        "--database", "myapp"
+        "--database", "myapp",
+        "--auth-source", "admin"  
       ]
     }
   }
