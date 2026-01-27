@@ -16,6 +16,7 @@
 - [GaussDB / OpenGauss 使用示例](#gaussdb--opengauss-使用示例)
 - [OceanBase 使用示例](#oceanbase-使用示例)
 - [TiDB 使用示例](#tidb-使用示例)
+- [ClickHouse 使用示例](#clickhouse-使用示例)
 - [Claude Desktop 配置示例](#claude-desktop-配置示例)
 - [常见使用场景](#常见使用场景)
 
@@ -1488,6 +1489,208 @@ Claude 会:
 - **弹性扩展**: 支持在线扩容和缩容
 
 **注意**: 这些特色功能可能需要特定的 SQL 语法或系统表查询，Claude 会根据标准 MySQL 语法生成查询。
+
+---
+
+## ClickHouse 使用示例
+
+### 基础配置（只读模式）
+
+```json
+{
+  "mcpServers": {
+    "clickhouse-db": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "clickhouse",
+        "--host", "localhost",
+        "--port", "8123",
+        "--user", "default",
+        "--password", "",
+        "--database", "default"
+      ]
+    }
+  }
+}
+```
+
+### 启用写入模式
+
+```json
+{
+  "mcpServers": {
+    "clickhouse-write": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "clickhouse",
+        "--host", "localhost",
+        "--port", "8123",
+        "--user", "default",
+        "--password", "your_password",
+        "--database", "analytics",
+        "--danger-allow-write"
+      ]
+    }
+  }
+}
+```
+
+### 连接 ClickHouse Cloud
+
+```json
+{
+  "mcpServers": {
+    "clickhouse-cloud": {
+      "command": "npx",
+      "args": [
+        "universal-db-mcp",
+        "--type", "clickhouse",
+        "--host", "your-instance.clickhouse.cloud",
+        "--port", "8443",
+        "--user", "default",
+        "--password", "your_password",
+        "--database", "default"
+      ]
+    }
+  }
+}
+```
+
+### 与 Claude 对话示例
+
+**用户**: 查看数据库中有哪些表？
+
+**Claude 会自动**:
+1. 调用 `get_schema` 工具
+2. 查询 `system.tables` 系统表
+3. 返回表列表
+
+**用户**: 查看 events 表的结构
+
+**Claude 会自动**:
+1. 调用 `get_table_info` 工具
+2. 查询 `system.columns` 获取列信息
+3. 返回列信息、主键、索引等详细信息
+
+**用户**: 统计最近一小时的事件数量
+
+**Claude 会自动**:
+1. 理解需求
+2. 生成 SQL: `SELECT COUNT(*) as event_count FROM events WHERE timestamp >= now() - INTERVAL 1 HOUR`
+3. 执行并返回结果
+
+**用户**: 按用户 ID 分组统计事件数量，取前 10 名
+
+**Claude 会自动**:
+1. 生成 SQL: `SELECT user_id, COUNT(*) as event_count FROM events GROUP BY user_id ORDER BY event_count DESC LIMIT 10`
+2. 执行并返回结果
+
+### 注意事项
+
+1. **默认端口**:
+   - HTTP 端口：8123（推荐用于 MCP 连接）
+   - 原生 TCP 端口：9000
+   - HTTPS 端口：8443（ClickHouse Cloud）
+2. **默认用户**: default
+3. **默认数据库**: default
+4. **列式存储**: ClickHouse 是列式数据库，适合 OLAP 场景
+5. **高性能**: 针对大数据分析优化，查询速度极快
+6. **SQL 方言**: 使用自己的 SQL 方言，与标准 SQL 有些差异
+
+### 支持的版本
+
+- ✅ ClickHouse 21.x
+- ✅ ClickHouse 22.x
+- ✅ ClickHouse 23.x
+- ✅ ClickHouse 24.x
+- ✅ ClickHouse Cloud
+
+### 常见使用场景
+
+#### 1. 大数据分析
+
+连接 ClickHouse 进行海量数据分析：
+
+```
+用户: 分析最近 30 天的用户行为数据
+
+Claude 会:
+1. 查询事件表
+2. 按时间、用户维度聚合
+3. 生成分析报告
+```
+
+#### 2. 实时数据查询
+
+```
+用户: 查询实时的系统监控指标
+
+Claude 会:
+1. 查询最新的监控数据
+2. 计算关键指标
+3. 返回实时统计结果
+```
+
+#### 3. 日志分析
+
+```
+用户: 分析应用日志，找出错误最多的接口
+
+Claude 会:
+1. 查询日志表
+2. 按接口分组统计错误数
+3. 返回排序后的结果
+```
+
+#### 4. 时序数据分析
+
+```
+用户: 分析时序数据的趋势
+
+Claude 会:
+1. 按时间窗口聚合数据
+2. 计算趋势指标
+3. 生成时序分析报告
+```
+
+### ClickHouse 特色功能
+
+ClickHouse 作为列式 OLAP 数据库，有许多特色功能：
+
+- **列式存储**: 数据按列存储，压缩率高，查询速度快
+- **向量化执行**: 利用 SIMD 指令加速查询
+- **分布式查询**: 支持分布式表和分布式查询
+- **物化视图**: 支持物化视图加速查询
+- **数据压缩**: 多种压缩算法，节省存储空间
+- **实时插入**: 支持高并发实时数据插入
+- **近似计算**: 支持近似算法加速聚合查询
+
+**注意**: ClickHouse 的 SQL 语法与标准 SQL 有一些差异，Claude 会尽量生成兼容的查询语句。
+
+### ClickHouse 最佳实践
+
+1. **表引擎选择**:
+   - 使用 MergeTree 系列引擎（推荐）
+   - 根据场景选择合适的表引擎
+
+2. **分区策略**:
+   - 按时间分区（如按天、按月）
+   - 合理设置分区键
+
+3. **排序键**:
+   - 选择查询频繁的列作为排序键
+   - 排序键顺序影响查询性能
+
+4. **数据类型**:
+   - 使用合适的数据类型节省空间
+   - 避免使用 String 类型存储数值
+
+5. **查询优化**:
+   - 使用 PREWHERE 过滤数据
+   - 避免 SELECT *
+   - 合理使用物化视图
 
 ---
 

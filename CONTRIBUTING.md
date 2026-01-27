@@ -54,6 +54,7 @@
 - **达梦** (`src/adapters/dm.ts`) - 国产数据库适配，兼容 Oracle
 - **OceanBase** (`src/adapters/oceanbase.ts`) - 分布式数据库，兼容 MySQL
 - **TiDB** (`src/adapters/tidb.ts`) - 分布式 NewSQL 数据库，兼容 MySQL 5.7
+- **ClickHouse** (`src/adapters/clickhouse.ts`) - 列式 OLAP 数据库，使用 HTTP 协议
 
 ### 示例结构
 

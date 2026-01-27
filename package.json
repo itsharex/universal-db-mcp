@@ -37,6 +37,9 @@
     "oceanbase",
     "tidb",
     "pingcap",
+    "clickhouse",
+    "olap",
+    "列式数据库",
     "蚂蚁金服",
     "华为高斯",
     "人大金仓",
@@ -58,6 +61,7 @@
     "LICENSE"
   ],
   "dependencies": {
+    "@clickhouse/client": "^1.16.0",
     "@modelcontextprotocol/sdk": "^1.0.4",
     "better-sqlite3": "^11.8.1",
     "commander": "^12.1.0",
