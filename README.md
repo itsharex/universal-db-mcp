@@ -19,7 +19,7 @@
 
 ✅ **智能表结构理解** - 自动获取数据库 Schema，提供精准建议
 
-✅ **多数据库支持** - MySQL、PostgreSQL、Redis、Oracle、达梦、SQL Server、MongoDB、SQLite、KingbaseES、GaussDB/OpenGauss、OceanBase、TiDB、ClickHouse、PolarDB、Vastbase、HighGo 一键切换
+✅ **多数据库支持** - MySQL、PostgreSQL、Redis、Oracle、达梦、SQL Server、MongoDB、SQLite、KingbaseES、GaussDB/OpenGauss、OceanBase、TiDB、ClickHouse、PolarDB、Vastbase、HighGo、GoldenDB 一键切换
 
 ✅ **安全第一** - 默认只读模式，防止误操作删库
 
@@ -364,6 +364,7 @@ Claude 会自动调用数据库工具完成查询！
 | PolarDB | `--type polardb` | 3306 | ✅ 已支持 | 阿里云云原生数据库，兼容 MySQL |
 | Vastbase | `--type vastbase` | 5432 | ✅ 已支持 | 海量数据国产数据库，兼容 PostgreSQL |
 | HighGo | `--type highgo` | 5866 | ✅ 已支持 | 瀚高国产数据库，兼容 PostgreSQL |
+| GoldenDB | `--type goldendb` | 3306 | ✅ 已支持 | 中兴分布式数据库，兼容 MySQL |
 
 **注意**:
 - 达梦数据库驱动 `dmdb` 会作为可选依赖自动安装。如果安装失败，请手动运行 `npm install -g dmdb`。
