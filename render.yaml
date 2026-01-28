@@ -28,7 +28,7 @@ services:
         value: info
     healthCheckPath: /api/health
     autoDeploy: true
-    scaling:
-      minInstances: 1
-      maxInstances: 3
-      targetCPUPercent: 70
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetCPUPercent: 70
