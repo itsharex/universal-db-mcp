@@ -4,7 +4,7 @@
  */
 
 import type { FastifyInstance } from 'fastify';
-import type { QueryRequest, ExecuteRequest, ApiResponse } from '../../types/http.js';
+import type { QueryRequest, ExecuteRequest, ApiResponse, HttpQueryResult } from '../../types/http.js';
 import type { QueryResult } from '../../types/adapter.js';
 import { ConnectionManager } from '../../core/connection-manager.js';
 
@@ -18,7 +18,7 @@ export async function setupQueryRoutes(
    */
   fastify.post<{
     Body: QueryRequest;
-    Reply: ApiResponse<QueryResult>;
+    Reply: ApiResponse<HttpQueryResult>;
   }>('/api/query', {
     schema: {
       body: {
@@ -41,9 +41,17 @@ export async function setupQueryRoutes(
       // Execute query
       const result = await service.executeQuery(query, params);
 
+      // Convert rows to JSON string for Coze compatibility
+      const httpResult: HttpQueryResult = {
+        rows: JSON.stringify(result.rows),
+        affectedRows: result.affectedRows,
+        executionTime: result.executionTime,
+        metadata: result.metadata,
+      };
+
       return {
         success: true,
-        data: result,
+        data: httpResult,
         metadata: {
           executionTime: result.executionTime,
           timestamp: new Date().toISOString(),

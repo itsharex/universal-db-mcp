@@ -15,6 +15,9 @@
     "MODE": {
       "default": "http"
     },
+    "PORT": {
+      "default": "3000"
+    },
     "HTTP_PORT": {
       "default": "3000"
     },

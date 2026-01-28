@@ -196,6 +196,20 @@ export interface Session {
 }
 
 /**
+ * HTTP Query Result (rows as JSON string for Coze compatibility)
+ */
+export interface HttpQueryResult {
+  /** 查询返回的行数据（JSON字符串格式） */
+  rows: string;
+  /** 受影响的行数（用于 INSERT/UPDATE/DELETE） */
+  affectedRows?: number;
+  /** 执行时间（毫秒） */
+  executionTime?: number;
+  /** 额外的元数据 */
+  metadata?: Record<string, unknown>;
+}
+
+/**
  * Fastify Request with API Key
  */
 export interface AuthenticatedRequest {
