@@ -31,7 +31,8 @@
       "Bash(npm run --silent)",
       "Bash(timeout:*)",
       "Bash(curl:*)",
-      "Bash(npm install cross-env --save-dev)"
+      "Bash(npm install cross-env --save-dev)",
+      "Bash(dir:*)"
     ]
   }
 }

@@ -279,13 +279,19 @@ export class OracleAdapter implements DbAdapter {
 
     for (const col of allColumns) {
       const tableName = col.TABLE_NAME;
+      const columnName = col.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !columnName) {
+        continue;
+      }
 
       if (!columnsByTable.has(tableName)) {
         columnsByTable.set(tableName, []);
       }
 
       columnsByTable.get(tableName)!.push({
-        name: col.COLUMN_NAME.toLowerCase(),
+        name: columnName.toLowerCase(),
         type: this.formatOracleType(
           col.DATA_TYPE,
           col.DATA_LENGTH,
@@ -301,12 +307,20 @@ export class OracleAdapter implements DbAdapter {
     const commentsByTable = new Map<string, Map<string, string>>();
     for (const comment of allComments) {
       const tableName = comment.TABLE_NAME;
+      const columnName = comment.COLUMN_NAME;
+      const comments = comment.COMMENTS;
+
+      // 跳过无效数据
+      if (!tableName || !columnName || !comments) {
+        continue;
+      }
+
       if (!commentsByTable.has(tableName)) {
         commentsByTable.set(tableName, new Map());
       }
       commentsByTable.get(tableName)!.set(
-        comment.COLUMN_NAME.toLowerCase(),
-        comment.COMMENTS
+        columnName.toLowerCase(),
+        comments
       );
     }
 
@@ -326,10 +340,17 @@ export class OracleAdapter implements DbAdapter {
     const primaryKeysByTable = new Map<string, string[]>();
     for (const pk of allPrimaryKeys) {
       const tableName = pk.TABLE_NAME;
+      const columnName = pk.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !columnName) {
+        continue;
+      }
+
       if (!primaryKeysByTable.has(tableName)) {
         primaryKeysByTable.set(tableName, []);
       }
-      primaryKeysByTable.get(tableName)!.push(pk.COLUMN_NAME.toLowerCase());
+      primaryKeysByTable.get(tableName)!.push(columnName.toLowerCase());
     }
 
     // 按表名分组索引信息
@@ -338,6 +359,12 @@ export class OracleAdapter implements DbAdapter {
     for (const idx of allIndexes) {
       const tableName = idx.TABLE_NAME;
       const indexName = idx.INDEX_NAME;
+      const columnName = idx.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !indexName || !columnName) {
+        continue;
+      }
 
       // 跳过主键索引
       if (indexName.includes('PK_') || indexName.includes('SYS_')) {
@@ -357,13 +384,16 @@ export class OracleAdapter implements DbAdapter {
         });
       }
 
-      tableIndexes.get(indexName)!.columns.push(idx.COLUMN_NAME.toLowerCase());
+      tableIndexes.get(indexName)!.columns.push(columnName.toLowerCase());
     }
 
     // 按表名分组行数统计
     const rowsByTable = new Map<string, number>();
     for (const stat of allStats) {
-      rowsByTable.set(stat.TABLE_NAME, stat.NUM_ROWS || 0);
+      const tableName = stat.TABLE_NAME;
+      if (tableName) {
+        rowsByTable.set(tableName, stat.NUM_ROWS || 0);
+      }
     }
 
     // 组装表信息
@@ -412,11 +442,16 @@ export class OracleAdapter implements DbAdapter {
    * 格式化 Oracle 数据类型
    */
   private formatOracleType(
-    dataType: string,
+    dataType: string | undefined | null,
     length?: number,
     precision?: number,
     scale?: number
   ): string {
+    // 处理空值
+    if (!dataType) {
+      return 'UNKNOWN';
+    }
+
     switch (dataType) {
       case 'NUMBER':
         if (precision !== null && precision !== undefined) {

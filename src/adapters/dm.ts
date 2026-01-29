@@ -245,14 +245,25 @@ export class DMAdapter implements DbAdapter {
         []
       );
 
+      // 规范化所有结果的列名为大写（dmdb 驱动可能返回小写列名）
+      const normalizeRows = (rows: any[]): any[] => {
+        return rows.map(row => {
+          const normalized: Record<string, unknown> = {};
+          for (const [key, value] of Object.entries(row)) {
+            normalized[key.toUpperCase()] = value;
+          }
+          return normalized;
+        });
+      };
+
       return this.assembleSchema(
         databaseName,
         version,
-        allColumnsResult.rows || [],
-        allCommentsResult.rows || [],
-        allPrimaryKeysResult.rows || [],
-        allIndexesResult.rows || [],
-        allStatsResult.rows || []
+        normalizeRows(allColumnsResult.rows || []),
+        normalizeRows(allCommentsResult.rows || []),
+        normalizeRows(allPrimaryKeysResult.rows || []),
+        normalizeRows(allIndexesResult.rows || []),
+        normalizeRows(allStatsResult.rows || [])
       );
     } catch (error) {
       throw new Error(
@@ -278,13 +289,19 @@ export class DMAdapter implements DbAdapter {
 
     for (const col of allColumns) {
       const tableName = col.TABLE_NAME;
+      const columnName = col.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !columnName) {
+        continue;
+      }
 
       if (!columnsByTable.has(tableName)) {
         columnsByTable.set(tableName, []);
       }
 
       columnsByTable.get(tableName)!.push({
-        name: col.COLUMN_NAME.toLowerCase(),
+        name: columnName.toLowerCase(),
         type: this.formatDMType(
           col.DATA_TYPE,
           col.DATA_LENGTH,
@@ -300,12 +317,20 @@ export class DMAdapter implements DbAdapter {
     const commentsByTable = new Map<string, Map<string, string>>();
     for (const comment of allComments) {
       const tableName = comment.TABLE_NAME;
+      const columnName = comment.COLUMN_NAME;
+      const comments = comment.COMMENTS;
+
+      // 跳过无效数据
+      if (!tableName || !columnName || !comments) {
+        continue;
+      }
+
       if (!commentsByTable.has(tableName)) {
         commentsByTable.set(tableName, new Map());
       }
       commentsByTable.get(tableName)!.set(
-        comment.COLUMN_NAME.toLowerCase(),
-        comment.COMMENTS
+        columnName.toLowerCase(),
+        comments
       );
     }
 
@@ -325,10 +350,17 @@ export class DMAdapter implements DbAdapter {
     const primaryKeysByTable = new Map<string, string[]>();
     for (const pk of allPrimaryKeys) {
       const tableName = pk.TABLE_NAME;
+      const columnName = pk.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !columnName) {
+        continue;
+      }
+
       if (!primaryKeysByTable.has(tableName)) {
         primaryKeysByTable.set(tableName, []);
       }
-      primaryKeysByTable.get(tableName)!.push(pk.COLUMN_NAME.toLowerCase());
+      primaryKeysByTable.get(tableName)!.push(columnName.toLowerCase());
     }
 
     // 按表名分组索引信息
@@ -337,6 +369,12 @@ export class DMAdapter implements DbAdapter {
     for (const idx of allIndexes) {
       const tableName = idx.TABLE_NAME;
       const indexName = idx.INDEX_NAME;
+      const columnName = idx.COLUMN_NAME;
+
+      // 跳过无效数据
+      if (!tableName || !indexName || !columnName) {
+        continue;
+      }
 
       // 跳过主键索引
       if (indexName.includes('PK_') || indexName.includes('SYS_')) {
@@ -356,13 +394,16 @@ export class DMAdapter implements DbAdapter {
         });
       }
 
-      tableIndexes.get(indexName)!.columns.push(idx.COLUMN_NAME.toLowerCase());
+      tableIndexes.get(indexName)!.columns.push(columnName.toLowerCase());
     }
 
     // 按表名分组行数统计
     const rowsByTable = new Map<string, number>();
     for (const stat of allStats) {
-      rowsByTable.set(stat.TABLE_NAME, stat.NUM_ROWS || 0);
+      const tableName = stat.TABLE_NAME;
+      if (tableName) {
+        rowsByTable.set(tableName, stat.NUM_ROWS || 0);
+      }
     }
 
     // 组装表信息
@@ -411,11 +452,16 @@ export class DMAdapter implements DbAdapter {
    * 格式化达梦数据类型
    */
   private formatDMType(
-    dataType: string,
+    dataType: string | undefined | null,
     length?: number,
     precision?: number,
     scale?: number
   ): string {
+    // 处理空值
+    if (!dataType) {
+      return 'UNKNOWN';
+    }
+
     switch (dataType) {
       case 'NUMBER':
       case 'NUMERIC':
