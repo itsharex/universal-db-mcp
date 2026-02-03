@@ -20,6 +20,28 @@
 
 ## 配置
 
+### 直接用这种方式配置就可以
+
+在项目根目录下打开PowerShell执行，这样这个mcp就可以在这个项目中使用了
+
+```
+#添加mcp
+claude mcp add universal-db-mcp -- npx universal-db-mcp --type xxx --host xxx.xxx.xxx.xxx --port xxx --user xxx --password xxx --database xxx
+```
+
+下面还有一些命令可能会用到
+
+```
+# 删除mcp
+claude mcp remove universal-db-mcp
+
+# 查看已配置的所有 MCP 服务器
+claude mcp list
+
+# 查看某个服务器的详细配置
+claude mcp get universal-db-mcp
+```
+
 ### 方式 1：项目级配置
 
 在项目根目录创建 `.mcp.json` 文件：
