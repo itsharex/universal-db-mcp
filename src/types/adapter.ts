@@ -172,3 +172,43 @@ export interface DbConfig {
   /** Oracle Instant Client 路径（启用 Thick 模式以支持 11g） */
   oracleClientPath?: string;
 }
+
+/**
+ * 枚举值查询结果
+ * 用于 get_enum_values 工具返回
+ */
+export interface EnumValuesResult {
+  /** 表名 */
+  tableName: string;
+  /** 列名 */
+  columnName: string;
+  /** 所有唯一值 */
+  values: (string | number | null)[];
+  /** 唯一值总数 */
+  totalCount: number;
+  /** 是否适合作为枚举（唯一值数量 < limit，说明值是有限的） */
+  isEnum: boolean;
+  /** 每个值的出现次数（可选，当 includeCount=true 时返回） */
+  valueCounts?: Record<string, number>;
+  /** 列的数据类型 */
+  columnType?: string;
+}
+
+/**
+ * 示例数据查询结果
+ * 用于 get_sample_data 工具返回
+ */
+export interface SampleDataResult {
+  /** 表名 */
+  tableName: string;
+  /** 返回的列 */
+  columns: string[];
+  /** 示例数据行（已脱敏） */
+  rows: Record<string, unknown>[];
+  /** 返回行数 */
+  rowCount: number;
+  /** 是否已脱敏 */
+  masked: boolean;
+  /** 脱敏的列（仅当有列被脱敏时返回） */
+  maskedColumns?: string[];
+}

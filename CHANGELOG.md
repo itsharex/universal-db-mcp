@@ -2,6 +2,31 @@
 
 本文档记录 Universal DB MCP 的版本更新历史。
 
+## [2.9.0] - 2026
+
+### 新增
+- **按需增强工具** - 新增两个 MCP 工具，帮助 LLM 更好地理解数据内容
+  - **`get_enum_values`** - 获取指定列的所有唯一值
+    - 适用于枚举类型列、状态列等有限值集合
+    - 支持 limit 参数控制返回数量
+    - 返回值包含 `isComplete` 标识是否返回了全部值
+  - **`get_sample_data`** - 获取表的示例数据
+    - 自动数据脱敏，保护敏感信息（手机号、邮箱、身份证、银行卡等）
+    - 支持按列名模式匹配和按值格式自动检测两种脱敏方式
+    - 可通过 `masking` 参数控制是否启用脱敏
+- **数据脱敏工具** - 新增 `DataMasker` 工具类（`src/utils/data-masking.ts`）
+  - 支持 7 种脱敏类型：phone、email、idcard、bankcard、password、partial、full
+  - 支持自定义脱敏规则
+  - 自动检测敏感数据格式
+- **REST API 端点** - 新增两个 HTTP API 端点
+  - `GET /api/enum-values` - 获取枚举值
+  - `GET /api/sample-data` - 获取示例数据
+
+### 改进
+- 新增 `EnumValuesResult` 和 `SampleDataResult` 类型定义
+- 更新 API 参考文档（中英文），添加新端点说明
+- 新增 20 个数据脱敏单元测试
+
 ## [2.8.0] - 2026
 
 ### 新增

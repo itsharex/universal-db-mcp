@@ -212,6 +212,8 @@ curl -X DELETE "http://localhost:3000/mcp?sessionId=your-session-id" \
 | `execute_query` | 执行 SQL 查询或数据库命令 |
 | `get_schema` | 获取数据库结构信息 |
 | `get_table_info` | 获取指定表的详细信息 |
+| `get_enum_values` | 获取指定列的所有唯一值（适用于枚举类型列） |
+| `get_sample_data` | 获取表的示例数据（自动脱敏保护隐私） |
 | `clear_cache` | 清除 Schema 缓存 |
 
 ### REST API 端点
@@ -724,6 +726,123 @@ curl "http://localhost:3000/api/schema/users?sessionId=V1StGXR8_Z5jdHi6B-myT" \
 }
 ```
 
+### 枚举值查询
+
+#### GET /api/enum-values
+
+获取指定列的所有唯一值，适用于枚举类型或有限值集合的列。
+
+**查询参数**:
+- `sessionId` (字符串, 必需): 从 `/api/connect` 获取的会话 ID
+- `table` (字符串, 必需): 表名
+- `column` (字符串, 必需): 列名
+- `limit` (数字, 可选): 返回的最大值数量（默认: 100）
+
+**请求示例**:
+```bash
+curl "http://localhost:3000/api/enum-values?sessionId=V1StGXR8_Z5jdHi6B-myT&table=orders&column=status" \
+  -H "X-API-Key: your-secret-key"
+```
+
+**响应** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "table": "orders",
+    "column": "status",
+    "values": ["pending", "processing", "shipped", "delivered", "cancelled"],
+    "totalCount": 5,
+    "isComplete": true
+  },
+  "metadata": {
+    "timestamp": "2026-01-27T12:00:00.000Z",
+    "requestId": "abc123"
+  }
+}
+```
+
+**响应字段说明**:
+- `values`: 该列的所有唯一值数组
+- `totalCount`: 唯一值的总数
+- `isComplete`: 是否返回了所有唯一值（如果超过 limit 则为 false）
+
+### 示例数据查询
+
+#### GET /api/sample-data
+
+获取表的示例数据，自动对敏感数据进行脱敏处理。
+
+**查询参数**:
+- `sessionId` (字符串, 必需): 从 `/api/connect` 获取的会话 ID
+- `table` (字符串, 必需): 表名
+- `limit` (数字, 可选): 返回的最大行数（默认: 5，最大: 100）
+- `masking` (字符串, 可选): 是否启用数据脱敏，值为 `true` 或 `false`（默认: `true`）
+
+**请求示例**:
+```bash
+# 获取示例数据（默认启用脱敏）
+curl "http://localhost:3000/api/sample-data?sessionId=V1StGXR8_Z5jdHi6B-myT&table=users" \
+  -H "X-API-Key: your-secret-key"
+
+# 获取更多示例数据
+curl "http://localhost:3000/api/sample-data?sessionId=V1StGXR8_Z5jdHi6B-myT&table=users&limit=10" \
+  -H "X-API-Key: your-secret-key"
+
+# 禁用脱敏（仅在安全环境中使用）
+curl "http://localhost:3000/api/sample-data?sessionId=V1StGXR8_Z5jdHi6B-myT&table=users&masking=false" \
+  -H "X-API-Key: your-secret-key"
+```
+
+**响应** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "table": "users",
+    "rows": [
+      {
+        "id": 1,
+        "name": "张*明",
+        "email": "z***@example.com",
+        "phone": "138****5678",
+        "status": "active"
+      },
+      {
+        "id": 2,
+        "name": "李*华",
+        "email": "l***@company.org",
+        "phone": "139****1234",
+        "status": "active"
+      }
+    ],
+    "totalRows": 2,
+    "maskedColumns": ["name", "email", "phone"],
+    "maskingEnabled": true
+  },
+  "metadata": {
+    "timestamp": "2026-01-27T12:00:00.000Z",
+    "requestId": "abc123"
+  }
+}
+```
+
+**响应字段说明**:
+- `rows`: 示例数据行数组
+- `totalRows`: 返回的行数
+- `maskedColumns`: 被脱敏处理的列名列表
+- `maskingEnabled`: 是否启用了脱敏
+
+**支持的脱敏类型**:
+| 类型 | 示例 | 匹配的列名模式 |
+|------|------|----------------|
+| 手机号 | `138****5678` | phone, mobile, tel, telephone 等 |
+| 邮箱 | `z***@example.com` | email, mail, e_mail 等 |
+| 身份证 | `110***********1234` | id_card, idcard, identity 等 |
+| 银行卡 | `************1234` | bank_card, card_number 等 |
+| 密码 | `******` | password, secret, token, api_key 等 |
+| 部分隐藏 | `张*明` | real_name, address 等 |
+
 ### 缓存管理
 
 为了提高大型数据库的性能，Schema 信息会被缓存。以下端点用于管理缓存。
@@ -805,6 +924,8 @@ curl "http://localhost:3000/api/cache/status?sessionId=V1StGXR8_Z5jdHi6B-myT" \
 | `LIST_TABLES_FAILED` | 500 | 列出表失败 |
 | `GET_SCHEMA_FAILED` | 500 | 获取 Schema 失败 |
 | `GET_TABLE_INFO_FAILED` | 500 | 获取表信息失败 |
+| `GET_ENUM_VALUES_FAILED` | 500 | 获取枚举值失败 |
+| `GET_SAMPLE_DATA_FAILED` | 500 | 获取示例数据失败 |
 | `CLEAR_CACHE_FAILED` | 500 | 清除缓存失败 |
 | `GET_CACHE_STATUS_FAILED` | 500 | 获取缓存状态失败 |
 | `INTERNAL_ERROR` | 500 | 内部服务器错误 |

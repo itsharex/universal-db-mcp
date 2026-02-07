@@ -37,7 +37,9 @@
       "WebFetch(domain:en.oceanbase.com)",
       "WebFetch(domain:docs.dify.ai)",
       "WebFetch(domain:www.pulsemcp.com)",
-      "WebFetch(domain:www.modb.pro)"
+      "WebFetch(domain:www.modb.pro)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest run:*)"
     ]
   }
 }

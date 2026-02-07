@@ -213,6 +213,8 @@ The following tools are available after connecting via MCP protocol:
 | `get_schema` | Get database schema information |
 | `get_table_info` | Get detailed information about a specific table |
 | `clear_cache` | Clear schema cache |
+| `get_enum_values` | Get all unique values for a column (for enum-type columns like status, type) |
+| `get_sample_data` | Get sample data from a table (with automatic data masking for privacy) |
 
 ### REST API Endpoints
 
@@ -706,6 +708,101 @@ curl "http://localhost:3000/api/schema/users?sessionId=V1StGXR8_Z5jdHi6B-myT" \
 }
 ```
 
+#### GET /api/enum-values
+
+Get all unique values for a column. Useful for understanding enum-type columns like status, type, category.
+
+**Query Parameters**:
+- `sessionId` (string, required): Session ID from `/api/connect`
+- `tableName` (string, required): Table name
+- `columnName` (string, required): Column name
+- `limit` (string, optional): Maximum number of values to return (default: 50, max: 100)
+- `includeCount` (string, optional): Include count for each value (true/false, default: false)
+
+**Request Example**:
+```bash
+curl "http://localhost:3000/api/enum-values?sessionId=V1StGXR8_Z5jdHi6B-myT&tableName=orders&columnName=status&includeCount=true" \
+  -H "X-API-Key: your-secret-key"
+```
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "tableName": "orders",
+    "columnName": "status",
+    "values": ["pending", "paid", "shipped", "delivered", "cancelled"],
+    "totalCount": 5,
+    "isEnum": true,
+    "valueCounts": {
+      "pending": 1200,
+      "paid": 3500,
+      "shipped": 2100,
+      "delivered": 8500,
+      "cancelled": 450
+    },
+    "columnType": "varchar(50)"
+  },
+  "metadata": {
+    "timestamp": "2026-01-27T12:00:00.000Z",
+    "requestId": "abc123"
+  }
+}
+```
+
+**Note**: This endpoint is not available for NoSQL databases (Redis, MongoDB).
+
+#### GET /api/sample-data
+
+Get sample data from a table with automatic data masking for privacy protection.
+
+**Query Parameters**:
+- `sessionId` (string, required): Session ID from `/api/connect`
+- `tableName` (string, required): Table name
+- `columns` (string, optional): Comma-separated list of columns to include
+- `limit` (string, optional): Number of rows to return (default: 3, max: 10)
+
+**Request Example**:
+```bash
+curl "http://localhost:3000/api/sample-data?sessionId=V1StGXR8_Z5jdHi6B-myT&tableName=users&columns=id,name,email,phone&limit=3" \
+  -H "X-API-Key: your-secret-key"
+```
+
+**Response** (200 OK):
+```json
+{
+  "success": true,
+  "data": {
+    "tableName": "users",
+    "columns": ["id", "name", "email", "phone"],
+    "rows": [
+      {"id": 1, "name": "Alice", "email": "a***@example.com", "phone": "138****5678"},
+      {"id": 2, "name": "Bob", "email": "b***@company.org", "phone": "139****1234"},
+      {"id": 3, "name": "Charlie", "email": "c***@test.com", "phone": "136****9876"}
+    ],
+    "rowCount": 3,
+    "masked": true,
+    "maskedColumns": ["email", "phone"]
+  },
+  "metadata": {
+    "timestamp": "2026-01-27T12:00:00.000Z",
+    "requestId": "abc123"
+  }
+}
+```
+
+**Data Masking Rules**:
+| Data Type | Masking Pattern | Example |
+|-----------|-----------------|---------|
+| Phone | Middle 4 digits hidden | `138****5678` |
+| Email | Username partially hidden | `a***@example.com` |
+| ID Card | Middle 11 digits hidden | `110***********1234` |
+| Bank Card | Only last 4 digits shown | `************1234` |
+| Password/Secret | Fully hidden | `******` |
+
+**Note**: This endpoint is not available for NoSQL databases (Redis, MongoDB).
+
 ## Error Codes
 
 | Code | HTTP Status | Description |
@@ -720,6 +817,8 @@ curl "http://localhost:3000/api/schema/users?sessionId=V1StGXR8_Z5jdHi6B-myT" \
 | `LIST_TABLES_FAILED` | 500 | Failed to list tables |
 | `GET_SCHEMA_FAILED` | 500 | Failed to get schema |
 | `GET_TABLE_INFO_FAILED` | 500 | Failed to get table information |
+| `GET_ENUM_VALUES_FAILED` | 500 | Failed to get enum values |
+| `GET_SAMPLE_DATA_FAILED` | 500 | Failed to get sample data |
 | `INTERNAL_ERROR` | 500 | Internal server error |
 
 ## Session Management

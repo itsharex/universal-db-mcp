@@ -492,8 +492,10 @@ interface SchemaCacheConfig {
 | v2.8.0 | 表注释支持 | +10-15% |
 | v2.8.0 | 隐式关系推断 | +15-20% |
 | v2.8.0 | 关系类型细化 | +5% |
+| v2.9.0 | 枚举值提取工具 `get_enum_values` | +10-15% |
+| v2.9.0 | 示例数据工具 `get_sample_data`（含脱敏） | +5-10% |
 
-**综合预期**：Text2SQL 准确性提升 **35-50%**。
+**综合预期**：Text2SQL 准确性提升 **50-70%**。
 
 ---
 
@@ -501,9 +503,11 @@ interface SchemaCacheConfig {
 
 以下是计划实现的功能，将进一步提升 LLM 对数据库的理解和 Text2SQL 准确性。
 
-### 8.1 按需增强工具（P1 优先级）
+### 8.1 按需增强工具（已实现 ✅）
 
-#### 8.1.1 枚举值提取工具 `get_enum_values`
+> **v2.9.0 已实现**：以下两个工具已在 v2.9.0 版本中实现，支持 MCP 协议和 HTTP API。
+
+#### 8.1.1 枚举值提取工具 `get_enum_values` ✅
 
 **为什么需要这个功能？**
 
@@ -572,7 +576,7 @@ interface EnumValuesResult {
 
 ---
 
-#### 8.1.2 示例数据工具 `get_sample_data`
+#### 8.1.2 示例数据工具 `get_sample_data` ✅
 
 **为什么需要这个功能？**
 
@@ -918,12 +922,12 @@ LLM 收益：理解 employees.dept_id → departments.id
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    P1 优先级（下一版本）                      │
+│                    已实现（v2.9.0）✅                         │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │  按需增强工具                                        │   │
-│  │  - get_enum_values（枚举值提取）                     │   │
-│  │  - get_sample_data（脱敏示例数据）                   │   │
-│  │  预期收益：+15-25%                                   │   │
+│  │  - get_enum_values（枚举值提取）✅                   │   │
+│  │  - get_sample_data（脱敏示例数据）✅                 │   │
+│  │  实际收益：+15-25%                                   │   │
 │  └─────────────────────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────┤
 │                    P2 优先级（后续版本）                      │
@@ -957,8 +961,10 @@ LLM 收益：理解 employees.dept_id → departments.id
 |-----|---------|
 | 类型定义 | `src/types/adapter.ts` |
 | Schema 增强 | `src/utils/schema-enhancer.ts` |
+| 数据脱敏 | `src/utils/data-masking.ts` |
 | 数据库服务 | `src/core/database-service.ts` |
 | MCP 服务器 | `src/mcp/mcp-server.ts` |
+| HTTP 路由 | `src/http/routes/schema.ts` |
 | MySQL 适配器 | `src/adapters/mysql.ts` |
 | PostgreSQL 适配器 | `src/adapters/postgres.ts` |
 | Oracle 适配器 | `src/adapters/oracle.ts` |
@@ -966,5 +972,5 @@ LLM 收益：理解 employees.dept_id → departments.id
 
 ---
 
-*文档版本：v2.8.0*
-*最后更新：2026-02-06*
+*文档版本：v2.9.0*
+*最后更新：2026-02-07*

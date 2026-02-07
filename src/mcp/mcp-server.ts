@@ -111,6 +111,55 @@ export class DatabaseMCPServer {
               properties: {},
             },
           },
+          {
+            name: 'get_enum_values',
+            description: '获取指定列的所有唯一值。用于了解 status、type、category 等枚举类型列的所有可能值，帮助生成准确的 WHERE 条件。例如：获取 orders.status 列的所有状态值（pending, shipped, delivered 等）。',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                tableName: {
+                  type: 'string',
+                  description: '表名',
+                },
+                columnName: {
+                  type: 'string',
+                  description: '列名（通常是 status、type、category 等枚举类型的列）',
+                },
+                limit: {
+                  type: 'number',
+                  description: '最大返回数量（可选，默认 50，最大 100）。如果唯一值超过此数量，说明该列可能不是枚举类型。',
+                },
+                includeCount: {
+                  type: 'boolean',
+                  description: '是否包含每个值的出现次数（可选，默认 false）。设为 true 可了解数据分布。',
+                },
+              },
+              required: ['tableName', 'columnName'],
+            },
+          },
+          {
+            name: 'get_sample_data',
+            description: '获取表的示例数据（已自动脱敏）。用于了解数据格式，如日期格式（2024-01-01 vs 20240101）、ID格式（UUID vs 自增）、金额精度等。敏感数据（手机号、邮箱、身份证等）会自动脱敏保护隐私。',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                tableName: {
+                  type: 'string',
+                  description: '表名',
+                },
+                columns: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: '要查看的列（可选，默认全部列）',
+                },
+                limit: {
+                  type: 'number',
+                  description: '返回行数（可选，默认 3，最大 10）',
+                },
+              },
+              required: ['tableName'],
+            },
+          },
         ],
       };
     });
@@ -201,6 +250,58 @@ export class DatabaseMCPServer {
                     success: true,
                     message: 'Schema 缓存已清除',
                   }, null, 2),
+                },
+              ],
+            };
+          }
+
+          case 'get_enum_values': {
+            const { tableName, columnName, limit, includeCount } = args as {
+              tableName: string;
+              columnName: string;
+              limit?: number;
+              includeCount?: boolean;
+            };
+
+            console.error(`🔢 获取枚举值: ${tableName}.${columnName}`);
+
+            const result = await this.databaseService.getEnumValues(
+              tableName,
+              columnName,
+              limit,
+              includeCount
+            );
+
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: JSON.stringify(result, null, 2),
+                },
+              ],
+            };
+          }
+
+          case 'get_sample_data': {
+            const { tableName, columns, limit } = args as {
+              tableName: string;
+              columns?: string[];
+              limit?: number;
+            };
+
+            console.error(`📝 获取示例数据: ${tableName}`);
+
+            const result = await this.databaseService.getSampleData(
+              tableName,
+              columns,
+              limit
+            );
+
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: JSON.stringify(result, null, 2),
                 },
               ],
             };
