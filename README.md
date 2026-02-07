@@ -58,6 +58,8 @@ AI: Let me query that for you...
 - **Security First** - Read-only mode by default prevents accidental data modifications
 - **Intelligent Caching** - Schema caching with configurable TTL for blazing-fast performance
 - **Batch Query Optimization** - Up to 100x faster schema retrieval for large databases
+- **Schema Enhancement** - Table comments, implicit relationship inference for better Text2SQL accuracy
+- **Data Masking** - Automatic sensitive data protection (phone, email, ID card, bank card, etc.)
 
 ### Performance Improvements
 
@@ -201,9 +203,11 @@ See [Dify Integration Guide](./docs/integrations/DIFY.md) for detailed setup ins
 │  │  • get_schema           │    │  │                             │  │   │
 │  │  • get_table_info       │    │  │  Tools: (same as stdio)     │  │   │
 │  │  • clear_cache          │    │  │  • execute_query            │  │   │
-│  │                         │    │  │  • get_schema               │  │   │
-│  │  For: Claude Desktop,   │    │  │  • get_table_info           │  │   │
-│  │       Cursor, etc.      │    │  │  • clear_cache              │  │   │
+│  │  • get_enum_values      │    │  │  • get_schema               │  │   │
+│  │  • get_sample_data      │    │  │  • get_table_info           │  │   │
+│  │                         │    │  │  • clear_cache              │  │   │
+│  │  For: Claude Desktop,   │    │  │  • get_enum_values          │  │   │
+│  │       Cursor, etc.      │    │  │  • get_sample_data          │  │   │
 │  └─────────────┬───────────┘    │  │                             │  │   │
 │                │                │  │  For: Dify, Remote Access   │  │   │
 │                │                │  └──────────────┬──────────────┘  │   │

@@ -58,6 +58,8 @@ AI: 让我帮你查询一下...
 - **安全第一** - 默认只读模式，防止意外的数据修改
 - **智能缓存** - Schema 缓存支持可配置的 TTL，性能极速
 - **批量查询优化** - 大型数据库的 Schema 获取速度提升高达 100 倍
+- **Schema 增强** - 表注释、隐式关系推断，提升 Text2SQL 准确性
+- **数据脱敏** - 自动保护敏感数据（手机号、邮箱、身份证、银行卡等）
 
 ### 性能提升
 
@@ -201,9 +203,11 @@ POST http://localhost:3000/mcp
 │  │  • get_schema           │    │  │                             │  │   │
 │  │  • get_table_info       │    │  │  工具：（与 stdio 相同）    │  │   │
 │  │  • clear_cache          │    │  │  • execute_query            │  │   │
-│  │                         │    │  │  • get_schema               │  │   │
-│  │  适用：Claude Desktop,  │    │  │  • get_table_info           │  │   │
-│  │        Cursor 等        │    │  │  • clear_cache              │  │   │
+│  │  • get_enum_values      │    │  │  • get_schema               │  │   │
+│  │  • get_sample_data      │    │  │  • get_table_info           │  │   │
+│  │                         │    │  │  • clear_cache              │  │   │
+│  │  适用：Claude Desktop,  │    │  │  • get_enum_values          │  │   │
+│  │        Cursor 等        │    │  │  • get_sample_data          │  │   │
 │  └─────────────┬───────────┘    │  │                             │  │   │
 │                │                │  │  适用：Dify、远程访问       │  │   │
 │                │                │  └──────────────┬──────────────┘  │   │
